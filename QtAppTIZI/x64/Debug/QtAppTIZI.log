@@ -1,0 +1,5 @@
+﻿  MainWindow.cpp
+C:\Users\ivanp\source\repos\QtAppTIZI\QtAppTIZI\MainWindow.cpp(754,16): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+  QtAppTIZI.vcxproj -> C:\Users\ivanp\source\repos\QtAppTIZI\x64\Debug\QtAppTIZI.exe
+  "pwsh.exe" не является внутренней или внешней
+  командой, исполняемой программой или пакетным файлом.

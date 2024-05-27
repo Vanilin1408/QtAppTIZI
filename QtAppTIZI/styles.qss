@@ -1,0 +1,263 @@
+
+/* ------------ Main Window Styles ------------ */
+QMainWindow {
+	background-color: qlineargradient(
+		spread: pad, x1: 0, y1: 0, x2: 0, y2: 1, 
+		stop: 0 #293c44, stop: 1 #162024
+	);
+}
+
+QWidget#RBGroupContainer1 {
+	background-color: rgba(255, 255, 255, 10); /* #202f35; */
+	border-radius: 10px;
+	color: #dfe8ec;
+}
+
+QWidget#mainTabView {
+	background-color: rgba(255, 255, 255, 10); /* #202f35; */
+	border-radius: 10px;
+	color: #dfe8ec;
+}
+
+/* MainWindow bottom zone PushButtons */
+QPushButton {
+	height: 40px;
+	width: 200px;
+	background-color: #1f2d36;
+	border-radius: 10px;
+	border-width: 0px;
+	border-style: none;
+	/*Font Params*/
+	color: #f4f7f9;
+	font-family: Trebuchet MS;
+	font-size: 16px;
+	margin: 0, 5, 0, 5;
+}
+QPushButton:hover {
+	background-color: #1b272f;
+}
+
+QPushButton:pressed {
+    background-color: transparent;
+}
+
+/* ComboBox Style */
+QComboBox {
+	height: 40;
+	width: 800;
+	background-color: #1f2d36;
+	border-radius: 10px;
+	border-width: 0px;
+	border-style: none;
+	/*Font Params*/
+	color: #f4f7f9;
+	font-family: Trebuchet MS;
+	font-size: 16px;
+}
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+	width: 30px;
+	border-style: none;
+}
+QComboBox::down-arrow {
+    image: url(:/images/down-arrow.png); /* Путь к изображению стрелки */
+    width: 20px;
+    height: 20px;
+}
+
+QComboBox QAbstractItemView {
+    background: #3d5863;        /* Цвет фона выпадающего списка */
+    border: 1px solid transparent;        /* Границы выпадающего списка */
+	border-radius: 10px;
+	outline: none; 
+}
+QComboBox QAbstractItemView::item {	
+    color: white;					/* Цвет текста */
+    padding: 0px;                   /* Внутренние отступы элементов */
+}
+QComboBox QAbstractItemView::item:selected {
+    background-color: rgba(255, 255, 255, 40);       /* Цвет фона выделенного элемента */
+	border-radius: 5px;
+	border: 1px solid transparent;
+}
+
+
+/* ------------ Input Data Window Styles ------------ */ 
+QWidget#inputDataWindow {
+	background-color: #253641;
+}
+
+QWidget#inputWindowTopZone {
+	border: 0px solid;
+	border-radius: 5px;
+	background-color: #385161;
+}
+
+QWidget#inputWindowMiddleZone {
+	border: 0px solid;
+	border-radius: 5px;
+	background-color: #385161;
+}
+
+QWidget#inputWindowMiddle1Zone {
+	border: 0px solid;
+	border-radius: 5px;
+	background-color: #385161;
+}
+
+QWidget#inputWindowBottomZone {
+	border: 0px solid;
+	border-radius: 5px;
+	background-color: #385161;
+}
+
+QLabel {
+	margin-left: 10px;
+	background-color: transparent;
+	font-size: 20px;
+	font-family: Trebuchet MS;
+	color: #d4dfe6;
+	qproperty-alignment: AlignCenter;
+}
+
+QLineEdit {
+	qproperty-alignment: AlignCenter;
+	margin-left: 5px;
+	margin-right: 20px;
+	height: 35px;
+	border: 0px solid;
+	border-color: #324856;
+	border-radius: 10px;
+	background-color: #2c3f4b;
+	font-size: 20px;
+	font-family: Trebuchet MS;
+	color: #d4dfe6;
+}
+
+/* ------------ TableWidget ------------ */
+QTableWidget {
+	background-color: rgba(255, 255, 255, 20);
+	border-radius: 5px;
+	border-style: none;
+	padding: 5px;
+	font-size: 16px; /* Размер шрифта */
+	gridline-color: #213035;
+	text-align: center; /* Выравнивание текста ????*/
+}
+
+QTableWidget::item {
+    color: #e0e9ec; /* Цвет текста */
+    background-color: transparent; /* Цвет фона ячейки */
+    font-family: Trebuchet MS;
+}
+
+QHeaderView {
+	background-color: transparent;
+	qproperty-defaultAlignment: AlignHCenter;
+}
+
+QHeaderView::section {
+	background-color: rgba(255, 255, 255, 20);
+	border-radius: 2px;
+	color: white;
+	border: 1px solid #27393f;
+	text-align: center;
+	font-size: 16px;
+	font-family: Trebuchet MS;
+}
+
+QTableWidget::item:selected {
+    background-color: rgba(255, 255, 255, 10); /* Цвет выделения */
+}
+
+QTableCornerButton::section {
+    background-color: transparent;
+}
+
+
+/* ------------ ScrollBar Styles ------------ */
+
+QScrollBar:horizontal {
+    height: 6px; /* Высота скроллера */
+    background: transparent; /* Прозрачный фон */
+}
+
+QScrollBar:vertical {
+    width: 6px; /* Ширина скроллера */
+    background: transparent; /* Прозрачный фон */
+}
+
+QScrollBar::handle:horizontal {
+    background: rgba(20, 29, 32, 128); /* Цвет фона ползунка */
+    border-radius: 3px; /* Закругление углов ползунка */
+}
+
+QScrollBar::handle:vertical {
+    background: rgba(20, 29, 32, 128); /* Цвет фона ползунка */
+    border-radius: 3px; /* Закругление углов ползунка */
+}
+
+QScrollBar::sub-line:horizontal,
+QScrollBar::add-line:horizontal,
+QScrollBar::sub-line:vertical,
+QScrollBar::add-line:vertical {
+    background: none; /* Убираем стрелки */
+}
+
+QScrollBar::sub-page:horizontal,
+QScrollBar::add-page:horizontal,
+QScrollBar::sub-page:vertical,
+QScrollBar::add-page:vertical {
+    background: none; /* Убираем стрелки */
+}
+
+/* ------------ RadioButtons ------------ */
+QRadioButton {
+    color: #d4dfe6; /* Цвет текста */
+    background-color: transparent; /* Прозрачный фон */
+    padding: 0px; /* Отступы вокруг текста */
+    font-family: Trebuchet MS;
+    font-size: 18px;
+}
+
+QRadioButton::indicator {
+    width: 16px; /* Ширина индикатора */
+    height: 16px; /* Высота индикатора */
+}
+
+QRadioButton::indicator::unchecked {
+    background-color: rgba(255, 255, 255, 40); /* Цвет индикатора, когда не выбран */
+    border: 1px solid rgba(0, 0, 0, 100); /* Граница индикатора, когда не выбран */
+    border-radius: 5px; /* Закругление индикатора */
+}
+
+QRadioButton::indicator::checked {
+    background-color: rgba(249, 247, 244, 150); /* Цвет индикатора, когда выбран */
+    border: 1px solid rgba(0, 0, 0, 100); /* Граница индикатора, когда выбран */
+    border-radius: 5px; /* Закругление индикатора */
+}
+
+/* ------------ GroupBoxes ------------ */
+/* Настройки для QGroupBox */
+QGroupBox {
+    color: #d4dfe6; /* Цвет текста */
+    background-color: transparent; /* Прозрачный фон */
+    border: 1px solid rgba(255, 255, 255, 50); /* Границы группы */
+    border-radius: 5px; /* Закругленные углы */
+    font-family: Trebuchet MS;
+    font-size: 18px;
+	margin-top: 25px;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top center; /* Заголовок сверху и по центру */
+    padding-top: 0px; /* Отступы вокруг заголовка */
+    background-color: transparent; /* Прозрачный фон */
+}
+
+/* ------------ QChartViews ------------ */
+QChartView {
+	background-color: transparent;
+}
