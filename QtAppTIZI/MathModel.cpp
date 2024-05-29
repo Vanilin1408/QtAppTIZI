@@ -2,18 +2,24 @@
 
 // Определение конструктора, полей модели
 Model::Model() :
+	// Параметры Линейных атак
 	linearA1_B1(0.0f, 0.0f),
 	linearA2_B2(0.0f, 0.0f),
 	linearA3_B3(0.0f, 0.0f),
 
+	// Параметры Экспоненциальных атак
 	expA1_B1(0.0f, 0.0f),
 	expA2_B2(0.0f, 0.0f),
 	expA3_B3(0.0f, 0.0f),
 
+	// Остальные праметры
 	maxt(0), k(0), n(0),
 	PtLarge(0), PtLess(0),
+
+	// Векторы для матрицы смежности
 	adjacencyMatrix(15, std::vector<int>(15, 0)), 
 	adjMatrixWithMinCoverage(),
+	// Элементы генератора случ. чисел
 	rd(), gen(rd()), distributionForEdgesCounts(1, 6), distrForIndx(0, 14) {}
 
 Model::~Model() {}
