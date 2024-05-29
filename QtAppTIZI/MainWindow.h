@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include <qvector.h>
 #include <qpushbutton.h>
 #include <qmainwindow.h>
 #include <qgridlayout.h>
@@ -108,6 +109,7 @@ private:
 	QTableWidget* tableForAdjMatrix;
 
 	// Charts Elements
+	QVector<QLineSeries*> multiDataSeriesForChart;
 	QLineSeries* dataSeriesForChart;
 	QChartView* generalChartView;
 	QChart* generalChart;
@@ -138,13 +140,11 @@ private:
 
 	// Генерация данных для разных p(t) и одиночных\коллаборационных тестирований
 	void fillSeriesByPTsOneDevice();
+	
+	// Метод для генерации серий для всех графиков с коллаборационной стратегией
 	void fillSeriesByPTsMultipleDevice();
-
-	// В условиях противодействия тестированию
-	void fillSeriesByPTsMULTIPLEDeviceWithOPPOSITION_byTK();
 	
 	// Метод для вывода матрицы смежности, а также матрицы с минимальными покрытиями
 	void showAdjMatrixTable();
 
-	// void DEBUG_adjMatrix();
 };

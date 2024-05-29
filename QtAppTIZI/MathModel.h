@@ -42,16 +42,17 @@ private:
 	std::vector<double> expDataSetWithPt2;
 	std::vector<double> expDataSetWithPt3;
 
-	// Векторы для вероятности P(p(t)) обнаружения уязвимостей
+	// Векторы для вероятности P(p(t)) обнаружения уязвимостей для единичного тестировщика
 	std::vector<double> PtLargeDataSetOneDevice;
 	std::vector<double> PtLessDataSetOneDevice;
 
-	// Векторы для вероятности P(p(t), k, n) обнаружения уязвимостей
+	// Векторы для вероятности P(p(t), k, n) обнаружения уязвимостей в коллаборац. стратегии
 	std::vector<double> PtLargeDataSetMultipleDevices;
 	std::vector<double> PtLessDataSetMultipleDevices;
 
 	// Вектор для вероятности P(p(t), k) при коллаборационной стратегии в условии противодействия тестированию
 	std::vector<double> PtkDataSetMULTIPLEDevicesWithOPPOSITION;
+	std::vector<std::vector<double>> PtkMultiDataSet;
 
 	// Матрица смежности
 	std::vector<std::vector<int>> adjacencyMatrix;
@@ -90,6 +91,7 @@ public:
 	std::vector<double> getPtLargeDataSetMULTIPLEDevices();
 	std::vector<double> getPtLessDataSetMULTIPLEDevices();
 	std::vector<double> getPtkDataSetMULTIPLEDevicesWithOPPOSITION();
+	std::vector<std::vector<double>> getPtkMultiDataSet();
 
 	std::vector<std::vector<int>> getAdjMatrix();
 	std::vector<std::vector<int>> getAdjMatrixWithMinCoverage();
@@ -106,14 +108,12 @@ public:
 	// Каждая выборка определенного подтипа атаки (низкая, средняя, высокая интенсивность)
 	void generateDataAboutProbabilityAttacks();
 
-	// Метод генерации вероятностей обнаружения уязвимости при тестировании 1 устройстовм P(p(t))
+	// Метод генерации вероятностей обнаружения уязвимости при тестировании 1 устройстовом P(p(t))
 	void generateDataAboutTestingByONEDevice();
 
-	// Метод генерации вероятностей обнаружения уязвимости при тестировании множеством устройстовм P(p(t), k, n)
-	void generateDataAboutTestingByMULTIPLEDevice();
-
-	// Метод генерации вероятности P(p(t,k)) обнаружения уязвимостей при коллаборационной стратегии в условиях противодействия тестированию относительно времени t
-	void generateDataAboutTestingByMULTIPLYDeviceWithOppositionByT(int typeOfAttack, int subTypeOfAttack, int typeOfPt, int typeOfChart);
+	// Генерация мультимножества данных, для построения множества кривых в зависимости от типа графика
+	// Для всех типов графиков с коллаборационной стратегией
+	void generateMultiDataSetAboutPtTesting(int typeOfAttack, int subTypeOfAttack, int typeOfPt, int typeOfChart);
 
 	// Метод для генерации матрицы смежности
 	void generateAdjacencyMatrix();
@@ -121,6 +121,7 @@ public:
 	// Метод для генерации матрицы смежности минимального покрытия
 	void generateAdjMatrixWithMinCoverage();
 
-	// don't know what doing this method ))))   ()_()
+	// don't know what doing this method ))))   (^)_(^)
 	unsigned long long factorial(int n);
+
 };

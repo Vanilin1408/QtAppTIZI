@@ -10,7 +10,7 @@ Model::Model() :
 	expA2_B2(0.0f, 0.0f),
 	expA3_B3(0.0f, 0.0f),
 
-	maxt(0), k(1), n(1),
+	maxt(0), k(0), n(0),
 	PtLarge(0), PtLess(0),
 	adjacencyMatrix(15, std::vector<int>(15, 0)), 
 	adjMatrixWithMinCoverage(),
@@ -73,6 +73,9 @@ std::vector<std::vector<int>> Model::getAdjMatrixWithMinCoverage() {
 std::unordered_set<int> Model::getMinCoveredSetXi() {
 	return minCoveredSetNodesXi;
 }
+std::vector<std::vector<double>> Model::getPtkMultiDataSet() {
+	return PtkMultiDataSet;
+}
 
 
 
@@ -92,6 +95,9 @@ void Model::setOtherParams(unsigned int maxT, unsigned int inK, unsigned int inN
 	maxt = maxT != 0 ? maxT : 1;
 	k = inK != 0 ? inK : 1;
 	n = inN != 0 ? inN : 1;
+	if (k > n) {
+		k = n;
+	}
 	PtLarge = inPtLarge;
 	PtLess = inPtLess;
 }
@@ -130,30 +136,17 @@ void Model::generateDataAboutTestingByONEDevice() {
 	}
 }
 
-void Model::generateDataAboutTestingByMULTIPLEDevice() {
-	PtLargeDataSetMultipleDevices.clear();
-	PtLessDataSetMultipleDevices.clear();
-
-	for (unsigned int i = 1; i <= k; i++) {
-		if (i > n) {	// 1 <= k <= n по условию
-			break;
-		}
-		// P(p(t),k,n) =Ckn * p(t)^k * (1 - p(t))^(n - k)
-		PtLargeDataSetMultipleDevices.push_back((static_cast<double>(factorial(n)) / (factorial(i) * factorial(n - i))) * pow(PtLarge, static_cast<double>(i)) * pow(1.0 - PtLarge, static_cast<double>(n - i)));
-		PtLessDataSetMultipleDevices.push_back((static_cast<double>(factorial(n)) / (factorial(i) * factorial(n - i))) * pow(PtLess, static_cast<double>(i)) * pow(1.0 - PtLess, static_cast<double>(n - i)));
-	}
-}
-
-void Model::generateDataAboutTestingByMULTIPLYDeviceWithOppositionByT(int typeOfAttack, int subTypeOfAttack, int typeOfPt, int typeOfChart) {
+void Model::generateMultiDataSetAboutPtTesting(int typeOfAttack, int subTypeOfAttack, int typeOfPt, int typeOfChart) {
 	// Ничего не выбрано
 	if (subTypeOfAttack == -1 || typeOfAttack == -1 || typeOfPt == -1) {
 		return;
 	}
 
-	PtkDataSetMULTIPLEDevicesWithOPPOSITION.clear();
+	PtkMultiDataSet.clear();
+	unsigned int countSeries = n >= k ? (n - k) : 0;
 	std::vector<double> tempVectorWithAttacksInfoByT;
 
-	// Выбираем выборки данных согласно типу и подтипу атаки
+	// Выбираем выборки данных для атак от (t) согласно типу и подтипу атаки
 	if (typeOfAttack == 1) {
 		switch (subTypeOfAttack) {
 		case 1:
@@ -185,36 +178,77 @@ void Model::generateDataAboutTestingByMULTIPLYDeviceWithOppositionByT(int typeOf
 		}
 	}
 
-	if (typeOfChart == 3) {
-		for (unsigned int i = 1; i <= maxt; i++) {
-			// Выбираем тип p(t) > 0.5 или p(t) < 0.5
-			if (typeOfPt == 1) {
-				PtkDataSetMULTIPLEDevicesWithOPPOSITION.push_back((1.0 - tempVectorWithAttacksInfoByT[i - 1]) *
-																  (static_cast<double>(factorial(n)) / (factorial(k) * factorial(n - k))) *
-																  pow(PtLarge, static_cast<double>(k)) * pow(1.0 - PtLarge, static_cast<double>(n - k)));
-			}
-			else {
-				PtkDataSetMULTIPLEDevicesWithOPPOSITION.push_back((1.0 - tempVectorWithAttacksInfoByT[i - 1]) *
-																  (static_cast<double>(factorial(n)) / (factorial(k) * factorial(n - k))) *
-																  pow(PtLess, static_cast<double>(k)) * pow(1.0 - PtLess, static_cast<double>(n - k)));
-			}
-		}
-	}
-	else if (typeOfChart == 4){
-		for (unsigned int i = 1; i <= k; i++) {
-			// Выбираем тип p(t) > 0.5 или p(t) < 0.5
-			if (typeOfPt == 1) {
-				PtkDataSetMULTIPLEDevicesWithOPPOSITION.push_back((1.0 - tempVectorWithAttacksInfoByT[(size_t)maxt - 1]) *
-																  (static_cast<double>(factorial(n)) / (factorial(i) * factorial(n - i))) *
-																  pow(PtLarge, static_cast<double>(i)) * pow(1.0 - PtLarge, static_cast<double>(n - i)));
-			}
-			else {
-				PtkDataSetMULTIPLEDevicesWithOPPOSITION.push_back((1.0 - tempVectorWithAttacksInfoByT[(size_t)maxt - 1]) *
-																  (static_cast<double>(factorial(n)) / (factorial(k) * factorial(n - i))) *
-																  pow(PtLess, static_cast<double>(i)) * pow(1.0 - PtLess, static_cast<double>(n - i)));
+	// Генерируем множество выборок в зависимости от режима работы
+	switch (typeOfChart) {
+	// Режим - 2, генерируем данные для коллаборационной стратегии без противодействия в количестве n - k + 1 выборок
+	case 2:	
+		for (unsigned int i = 0; i <= countSeries; i++) {
+			PtkMultiDataSet.push_back(std::vector<double>(0));
+
+			// Для каждого значения k генерируем выборку P(p(t), k, n)
+			for (unsigned int ik = 1; ik <= k; ik++) {
+				// В зависимости от типа p(t)
+				if (typeOfPt == 1) {	// P(p(t),k,n) =Ckn * p(t)^k * (1 - p(t))^(n - k)
+					PtkMultiDataSet[i].push_back((static_cast<double>(factorial(k + i)) / (factorial(ik) * factorial((k + i) - ik))) * 
+												 pow(PtLarge, static_cast<double>(ik)) * pow(1.0 - PtLarge, static_cast<double>((k + i) - ik)));
+				}
+				else {
+					PtkMultiDataSet[i].push_back((static_cast<double>(factorial(k + i)) / (factorial(ik) * factorial((k + i) - ik))) * 
+												 pow(PtLess, static_cast<double>(ik)) * pow(1.0 - PtLess, static_cast<double>((k + i) - ik)));
+				}
 			}
 		}
-	}
+		break;
+
+	// Режим - 3, генерируем данные для коллаборационной стратегии с противодействием в количестве t выборок, для каждого типа атаки на промежутке t
+	case 3:
+		for (unsigned int ik = 1; ik <= k; ik++) {
+			PtkMultiDataSet.push_back(std::vector<double>(0));
+
+			// Для каждого значения k генерируем выборку P(p(t), k, n)
+			for (unsigned int j = 0; j < maxt; j++) {
+				// В зависимости от типа p(t)
+				if (typeOfPt == 1) {
+					PtkMultiDataSet[ik - 1].push_back((1.0 - tempVectorWithAttacksInfoByT[j]) *
+												 (static_cast<double>(factorial(n)) / (factorial(ik) * factorial(n - ik))) *
+												 pow(PtLarge, static_cast<double>(ik)) * pow(1.0 - PtLarge, static_cast<double>(n - ik)));
+				}
+				else {
+					PtkMultiDataSet[ik - 1].push_back((1.0 - tempVectorWithAttacksInfoByT[j]) *
+												 (static_cast<double>(factorial(n)) / (factorial(ik) * factorial(n - ik))) *
+												 pow(PtLess, static_cast<double>(ik)) * pow(1.0 - PtLess, static_cast<double>(n - ik)));
+				}
+			}
+		}
+		break;
+
+	// Режим 4, коллаборационная стратегия, построения графика от k, с учетом выборок от k до n, и противодейтсвия
+	// Если режим - 4, то генерируем данные для коллаборационной стратегии с учетом противодействия в количестве n - k + 1 выборок
+	case 4:	
+		// Заполняем выборки данных
+		for (unsigned int i = 0; i <= countSeries; i++) {
+			PtkMultiDataSet.push_back(std::vector<double>(0));
+
+			// Для каждого значения k генерируем выборку P(p(t), k, n)
+			for (unsigned int ik = 1; ik <= k; ik++) {
+				// В зависимости от типа p(t)
+				if (typeOfPt == 1) {
+					PtkMultiDataSet[i].push_back((1.0 - tempVectorWithAttacksInfoByT[(size_t)maxt - 1]) *
+												 (static_cast<double>(factorial(k + i)) / (factorial(ik) * factorial((k + i) - ik))) *
+												 pow(PtLarge, static_cast<double>(ik)) * pow(1.0 - PtLarge, static_cast<double>((k + i) - ik)));
+				}
+				else {
+					PtkMultiDataSet[i].push_back((1.0 - tempVectorWithAttacksInfoByT[(size_t)maxt - 1]) *
+												 (static_cast<double>(factorial(k + i)) / (factorial(ik) * factorial((k + i) - ik))) *
+												 pow(PtLess, static_cast<double>(ik)) * pow(1.0 - PtLess, static_cast<double>((k + i) - ik)));
+				}
+			}
+		}
+		break;
+
+	default:
+		break;
+	} 
 }
 
 void Model::generateAdjacencyMatrix() {

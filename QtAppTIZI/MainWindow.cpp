@@ -12,6 +12,15 @@ MainWindow::MainWindow(QWidget* parent) :
 MainWindow::~MainWindow() { 
 	delete model;
 	delete inputDataWindow;
+
+	// Удаляем график
+	delete generalChart;
+
+	// Освобождаем таблицу
+	delete tableForAdjMatrix;
+
+	// Освобождаем память от серий с данными
+	multiDataSeriesForChart.clear();
 }
 
 // Отрисовка UI
@@ -125,7 +134,7 @@ void MainWindow::setupRadioButtons() {
 	RB_AttackTypeGROUP = new QButtonGroup(RBGroupsContainer);			// Логическая
 	RB_AttackTypeBOX = new QGroupBox("Тип атаки", RBGroupsContainer);	// Визуальная
 	RB_AttackTypeBOX->setFixedSize(180, 100);
-	VBoxForRBAttackType = new QVBoxLayout();							// Размещение по вертикали
+	VBoxForRBAttackType = new QVBoxLayout(RB_AttackTypeBOX);							// Размещение по вертикали
 
 	// RadioButtons by Attacks
 	radioButtonLINEARAttack = new QRadioButton("Линейная", RBGroupsContainer);
@@ -147,9 +156,8 @@ void MainWindow::setupRadioButtons() {
 	// Вторая группа радиокнопок
 	RB_AttackSUBTypeGROUP = new QButtonGroup(RBGroupsContainer);
 	RB_AttackSUBTypeBOX = new QGroupBox("Подтип атаки", RBGroupsContainer);
-	// RB_AttackSUBTypeBOX->setFixedSize(180, 150);
 	RB_AttackSUBTypeBOX->setFixedWidth(180);
-	VBoxForRBAttackSUBType = new QVBoxLayout();
+	VBoxForRBAttackSUBType = new QVBoxLayout(RB_AttackSUBTypeBOX);
 
 	// Сами кнопки
 	firstSubTypeAttackRB = new QRadioButton("1", RBGroupsContainer);
@@ -174,7 +182,7 @@ void MainWindow::setupRadioButtons() {
 	RB_PtValueGROUP = new QButtonGroup(RBGroupsContainer);
 	RB_PtValueBOX = new QGroupBox("Вероятность p(t)", RBGroupsContainer);
 	RB_PtValueBOX->setFixedSize(180, 100);
-	VBoxForRB_PtValue = new QVBoxLayout();
+	VBoxForRB_PtValue = new QVBoxLayout(RB_PtValueBOX);
 
 	PtLargeRB = new QRadioButton("p(t) > 0.5", RBGroupsContainer);
 	PtLessRB = new QRadioButton("p(t) < 0.5", RBGroupsContainer);
@@ -359,30 +367,29 @@ void MainWindow::transportDataToModel(double linearA1, double linearA2, double l
 	// Генерируем datasets внутри модели согласно введенным данным
 	model->generateDataAboutProbabilityAttacks();
 	model->generateDataAboutTestingByONEDevice();
-	model->generateDataAboutTestingByMULTIPLEDevice();
 
 	// ------------------------ Debugging Translate Data ------------------------ // 
-	qDebug() << "Res data: ";
-	qDebug() << "linA1: " << linearA1;
-	qDebug() << "linA2: " << linearA2;
-	qDebug() << "linA3: " << linearA3;
-	qDebug() << "linB1: " << linearB1;
-	qDebug() << "linB2: " << linearB2;
-	qDebug() << "linB3: " << linearB3;
+	//qDebug() << "Res data: ";
+	//qDebug() << "linA1: " << linearA1;
+	//qDebug() << "linA2: " << linearA2;
+	//qDebug() << "linA3: " << linearA3;
+	//qDebug() << "linB1: " << linearB1;
+	//qDebug() << "linB2: " << linearB2;
+	//qDebug() << "linB3: " << linearB3;
 
-	qDebug() << "expA1: " << expA1;
-	qDebug() << "expA2: " << expA2;
-	qDebug() << "expA3: " << expA3;
-	qDebug() << "expB1: " << expB1;
-	qDebug() << "expB2: " << expB2;
-	qDebug() << "expB3: " << expB3;
+	//qDebug() << "expA1: " << expA1;
+	//qDebug() << "expA2: " << expA2;
+	//qDebug() << "expA3: " << expA3;
+	//qDebug() << "expB1: " << expB1;
+	//qDebug() << "expB2: " << expB2;
+	//qDebug() << "expB3: " << expB3;
 
-	qDebug() << "maxT: " << maxT;
-	qDebug() << "k: " << k;
-	qDebug() << "n: " << n;
+	//qDebug() << "maxT: " << maxT;
+	//qDebug() << "k: " << k;
+	//qDebug() << "n: " << n;
 
-	qDebug() << "PtLarge: " << PtLarge;
-	qDebug() << "PtLess: " << PtLess;
+	//qDebug() << "PtLarge: " << PtLarge;
+	//qDebug() << "PtLess: " << PtLess;
 	// ------------------------ Debugging Translate Data ------------------------ // 
 }
 
@@ -428,7 +435,7 @@ void MainWindow::generateAndShowTableWithAttacksInfo() {
 		tableWithMainAttacksInfo->setHorizontalHeaderLabels(headers);
 	}
 	else {
-		tableWithMainAttacksInfo->clearContents(); // если была уже создана - очистить
+		tableWithMainAttacksInfo->clearContents(); // если была уже создана - очистить items
 	}
 
 	// Установка кол-ва строк
@@ -474,22 +481,10 @@ void MainWindow::generateAndShowCharts() {
 
 		mainTabLayout->addWidget(generalChartView);
 
-		// DataSeries for chart
-		dataSeriesForChart = new QLineSeries(mainTabView);
-		dataSeriesForChart->setPointsVisible(true);
-		// dataSeriesForChart->setPointLabelsVisible(true);
-		dataSeriesForChart->setBrush(QBrush(Qt::yellow));
-		generalChart->addSeries(dataSeriesForChart);
-		
-
 		generalChart->addAxis(axisX, Qt::AlignBottom);
 		generalChart->addAxis(axisY, Qt::AlignLeft);
-
-		dataSeriesForChart->attachAxis(axisX);
-		dataSeriesForChart->attachAxis(axisY);
 	}
 	else {
-		dataSeriesForChart->clear();
 		axisX->setTitleText("");
 		axisY->setTitleText("");
 	}
@@ -500,7 +495,7 @@ void MainWindow::generateAndShowCharts() {
 	// Выбор метода заполнения данных
 	switch (currIndexComboBox) {
 	case 0:
-		dataSeriesForChart->append(0, 0);
+		// dataSeriesForChart->append(0, 0);
 		axisX->setTitleText("t");
 		axisY->setTitleText("pA(t)");
 		fillSeriesByAttackInfo();
@@ -518,12 +513,12 @@ void MainWindow::generateAndShowCharts() {
 	case 3:
 		axisX->setTitleText("t");
 		axisY->setTitleText("P(pA(t), p(t, k))");
-		fillSeriesByPTsMULTIPLEDeviceWithOPPOSITION_byTK();
+		fillSeriesByPTsMultipleDevice();
 		break;
 	case 4:
 		axisX->setTitleText("k");
 		axisY->setTitleText("P(pA(t), p(t, k))");
-		fillSeriesByPTsMULTIPLEDeviceWithOPPOSITION_byTK();
+		fillSeriesByPTsMultipleDevice();
 		break;
 	default:
 		break;
@@ -544,6 +539,26 @@ void MainWindow::fillSeriesByAttackInfo() {
 	if (checkedIdAttackType == -1 || checkedIdAttackSUBType == -1) {
 		generalChart->setTitle("Для построения графика необходимо выбрать типы и подтипы атак");
 		return;
+	}
+
+	// Удаляем каждую серию как из графика, так и из памяти, также очищая указатели с помощью .clear()
+	if (multiDataSeriesForChart.size() == 1) {
+		multiDataSeriesForChart[0]->clear();
+	}
+	else {
+		for (QLineSeries* series : multiDataSeriesForChart) {
+			generalChart->removeSeries(series);
+			delete series;
+		}
+		multiDataSeriesForChart.clear();
+
+		// Создаем новую 1 серию для работы с одиночными выборками
+		QLineSeries* newSeries = new QLineSeries(generalChart);
+		generalChart->addSeries(newSeries);
+		newSeries->attachAxis(axisX);
+		newSeries->attachAxis(axisY);
+		newSeries->setPointsVisible(true);
+		multiDataSeriesForChart.append(newSeries);
 	}
 
 	unsigned int tempMaxT = model->getMaxT();
@@ -586,7 +601,7 @@ void MainWindow::fillSeriesByAttackInfo() {
 	maxValX = tempMaxT;
 	// Заполняем серию
 	for (size_t i = 1; i <= tempMaxT; i++) {
-		dataSeriesForChart->append(i, tempVectorY[i - 1]);
+		multiDataSeriesForChart[0]->append(i, tempVectorY[i - 1]);
 		maxValY = std::max(maxValY, tempVectorY[i - 1]);
 	}
 }
@@ -597,6 +612,26 @@ void MainWindow::fillSeriesByPTsOneDevice() {
 	if (checkedIdPT == -1) {
 		generalChart->setTitle("Для построения графика необходимо выбрать параметр p(t)");
 		return;
+	}
+
+	// Удаляем каждую серию как из графика, так и из памяти, также очищая указатели с помощью .clear()
+	if (multiDataSeriesForChart.size() == 1) {
+		multiDataSeriesForChart[0]->clear();
+	}
+	else {
+		for (QLineSeries* series : multiDataSeriesForChart) {
+			generalChart->removeSeries(series);
+			delete series;
+		}
+		multiDataSeriesForChart.clear();
+
+		// Создаем новую 1 серию для работы с одиночными выборками
+		QLineSeries* newSeries = new QLineSeries(generalChart);
+		generalChart->addSeries(newSeries);
+		newSeries->attachAxis(axisX);
+		newSeries->attachAxis(axisY);
+		newSeries->setPointsVisible(true);
+		multiDataSeriesForChart.append(newSeries);
 	}
 	
 	int tempK = model->getK();
@@ -613,83 +648,110 @@ void MainWindow::fillSeriesByPTsOneDevice() {
 
 	maxValX = tempK;
 	for (size_t i = 1; i <= tempDataSet.size(); i++) {
-		dataSeriesForChart->append(i, tempDataSet[i - 1]);
+		multiDataSeriesForChart[0]->append(i, tempDataSet[i - 1]);
 		maxValY = std::max(maxValY, tempDataSet[i - 1]);
 	}
 }
 
 void MainWindow::fillSeriesByPTsMultipleDevice() {
+	int typeAttackId = RB_AttackTypeGROUP->checkedId();
+	int subTypeAttackId = RB_AttackSUBTypeGROUP->checkedId();
 	int checkedIdPT = RB_PtValueGROUP->checkedId();
+	int comboBoxId = comboBoxWithChartsTypes->currentIndex();
 
-	if (checkedIdPT == -1) {
-		generalChart->setTitle("Для построения графика необходимо выбрать параметр p(t)");
-		return;
+	// Организация подписей, подсказок графика и проверка параметров для построения графика
+	switch (comboBoxId) {
+	case 2:
+		if (checkedIdPT == -1) {
+			generalChart->setTitle("Для построения графика необходимо выбрать параметр p(t)");
+			return;
+		}
+
+		if (checkedIdPT == 1) {
+			generalChart->setTitle("График вероятности P(p(t,k)) обнаружения уязвимостей при коллаборационной стратегии p(t) > 0.5");
+		}
+		else {
+			generalChart->setTitle("График вероятности P(p(t,k)) обнаружения уязвимостей при коллаборационной стратегии p(t) less 0.5");
+		}
+		break;
+	case 3:	// Если тип графика от t
+		if (typeAttackId == -1 || subTypeAttackId == -1 || checkedIdPT == -1) {
+			generalChart->setTitle("Для построения графика следует выбрать типы и подтипы атак, а также значение p(t)");
+			return;
+		}
+		// Если линейный тип атаки
+		if (typeAttackId == 1) {
+			generalChart->setTitle(QString("График обнар. уязв. от t при коллаб. стр. в условиях противодействия тестированию для линейного типа, подтип %1, k = %2").
+				arg(subTypeAttackId).arg(model->getK()));
+		}
+		// Иначе экспоненциальный
+		else {
+			generalChart->setTitle(QString("График обнар. уязв. от t при коллаб. стр. в условиях противодействия тестированию для экспоненц. типа, подтип %1, k = %2").
+				arg(subTypeAttackId).arg(model->getK()));
+		}
+		break;
+	case 4:	// Если тип графика от k
+		if (typeAttackId == -1 || subTypeAttackId == -1 || checkedIdPT == -1) {
+			generalChart->setTitle("Для построения графика следует выбрать типы и подтипы атак, а также значение p(t)");
+			return;
+		}
+
+		if (typeAttackId == 1) {
+			generalChart->setTitle(QString("График обнар. уязв. от k при коллаб. стр. в условиях противодействия тестированию для линейного типа, подтип %1, t = %2").
+				arg(subTypeAttackId).arg(model->getMaxT()));
+		}
+		else {
+			generalChart->setTitle(QString("График обнар. уязв. от k при коллаб. стр. в условиях противодействия тестированию для экспоненц. типа, подтип %1, t = %2").
+				arg(subTypeAttackId).arg(model->getMaxT()));
+		}
+		break;
+	default:
+		break;
 	}
+
+	// Удаляем каждую серию как из гарафика, так и из памяти, также очищая указатели с помощью .clear()
+	for (QLineSeries* series : multiDataSeriesForChart) {
+		generalChart->removeSeries(series);
+		delete series;
+	}
+	multiDataSeriesForChart.clear();
+
+	// Генерируем выборки для заданных параметров и режима
+	model->generateMultiDataSetAboutPtTesting(typeAttackId, subTypeAttackId, checkedIdPT, comboBoxId);
+	std::vector<std::vector<double>> tempMultiSet = model->getPtkMultiDataSet();
 
 	int tempK = model->getK();
-	std::vector<double> tempDataSet;
-
-	if (checkedIdPT == 1) { 
-		generalChart->setTitle("График вероятности P(p(t,k)) обнаружения уязвимостей при коллаборационной стратегии p(t) > 0.5");
-		tempDataSet = model->getPtLargeDataSetMULTIPLEDevices();
-	}
-	else {
-		generalChart->setTitle("График вероятности P(p(t,k)) обнаружения уязвимостей при коллаборационной стратегии p(t) less 0.5");
-		tempDataSet = model->getPtLessDataSetMULTIPLEDevices();
-	}
-
-	// Переписываем данные в Серию для графика, обновляя макс. значения осей
-	maxValX = tempK;
-	for (size_t i = 0; i < tempDataSet.size(); i++) {
-		dataSeriesForChart->append(i + 1, tempDataSet[i]);
-		maxValY = std::max(maxValY, tempDataSet[i]);
-	}
-}
-
-void MainWindow::fillSeriesByPTsMULTIPLEDeviceWithOPPOSITION_byTK() {
-	int attackTypeId = RB_AttackTypeGROUP->checkedId();
-	int attackSubTypeId = RB_AttackSUBTypeGROUP->checkedId();
-	int PtId = RB_PtValueGROUP->checkedId();
-	int chartId = comboBoxWithChartsTypes->currentIndex();
-
-	// Ничего не выбрано
-	if (attackTypeId == -1 || attackSubTypeId == -1 || PtId == -1) {
-		generalChart->setTitle("Для построения графика следует выбрать типы и подтипы атак, а также значение p(t)");
-		return;
-	}
-
-	// Генерируем данные в модели
-	model->generateDataAboutTestingByMULTIPLYDeviceWithOppositionByT(attackTypeId, attackSubTypeId, PtId, chartId);
-	// Получаем данные из модели
-	std::vector<double> tempDataSet = model->getPtkDataSetMULTIPLEDevicesWithOPPOSITION();
+	int tempT = model->getMaxT();
+	int tempN = model->getN();
 	
-	// Если тип графика от t
-	if (chartId == 3) {
-		if (attackTypeId == 1) {
-			generalChart->setTitle(QString("График обнар. уязв. от t при коллаб. стр. в условиях противодействия тестированию для линейного типа, подтип %1, k = %2, n = %3").
-									arg(attackSubTypeId).arg(model->getK()).arg(model->getN()));
+	for (size_t i = 0; i < tempMultiSet.size(); i++) {
+		QLineSeries* newSeries = new QLineSeries(generalChart);
+
+		// Если работаем с различными n, то есть промежуточными i, которые входят в дистанцию n - k, то есть k + 0, + 1, + 2, ...
+		if (comboBoxId == 2 || comboBoxId == 4) {
+			newSeries->setName(QString("n = %1").arg(tempK + i));
 		}
-		else {
-			generalChart->setTitle(QString("График обнар. уязв. от t при коллаб. стр. в условиях противодействия тестированию для экспоненц. типа, подтип %1, k = %2, n = %3").
-									arg(attackSubTypeId).arg(model->getK()).arg(model->getN()));
+		// Иначе, в режиме исследования от t, выбираем различные k
+		else if (comboBoxId == 3) {
+			newSeries->setName(QString("k = %1").arg(i + 1));
 		}
-	} 
-	// Если тип графика от k
-	else if (chartId == 4) {
-		if (attackTypeId == 1) {
-			generalChart->setTitle(QString("График обнар. уязв. от k при коллаб. стр. в условиях противодействия тестированию для линейного типа, подтип %1, t = %2, n = %3").
-									arg(attackSubTypeId).arg(model->getMaxT()).arg(model->getN()));
+		newSeries->setPointsVisible(true);
+
+		for (size_t j = 0; j < tempMultiSet[i].size(); j++) {
+			newSeries->append(j + 1, tempMultiSet[i][j]);
 		}
-		else {
-			generalChart->setTitle(QString("График обнар. уязв. от k при коллаб. стр. в условиях противодействия тестированию для экспоненц. типа, подтип %1, t = %2, n = %3").
-									arg(attackSubTypeId).arg(model->getMaxT()).arg(model->getN()));
-		}
+
+		generalChart->addSeries(newSeries);
+		newSeries->attachAxis(axisX);
+		newSeries->attachAxis(axisY);
+		multiDataSeriesForChart.append(newSeries);
 	}
 
-	maxValX = (unsigned int)tempDataSet.size();
-	for (size_t i = 0; i < tempDataSet.size(); i++) {
-		dataSeriesForChart->append(i + 1, tempDataSet[i]);
-		maxValY = std::max(tempDataSet[i], maxValY);
+	if (comboBoxId == 2 || comboBoxId == 4) {
+		maxValX = tempK;
+	}
+	else if (comboBoxId == 3) {
+		maxValX = tempT;
 	}
 }
 // ---------------------- Filling Series for Charts ---------------------- //
