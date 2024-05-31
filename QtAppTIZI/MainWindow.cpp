@@ -771,12 +771,13 @@ void MainWindow::showAdjMatrixTable() {
 		mainTabLayout->addWidget(tableForAdjMatrix, 0, Qt::AlignCenter);
 		
 		// Геометрия таблицы
-		tableForAdjMatrix->setFixedSize(630, 480);
+		tableForAdjMatrix->setFixedSize(650, 475);
 		tableForAdjMatrix->setRowCount(15);
 		tableForAdjMatrix->setColumnCount(15);
 
 		for (int i = 0; i < 15; i++) {
-			tableForAdjMatrix->setColumnWidth(static_cast<int>(i), 22);
+			tableForAdjMatrix->setColumnWidth(i, 40);
+			tableForAdjMatrix->setRowHeight(i, 29);
 		}
 
 		// Заголовки таблицы
