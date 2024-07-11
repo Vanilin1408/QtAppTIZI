@@ -83,8 +83,6 @@ std::vector<std::vector<double>> Model::getPtkMultiDataSet() {
 	return PtkMultiDataSet;
 }
 
-
-
 void Model::setLinearParams(double linearA1, double linearA2, double linearA3, double linearB1, double linearB2, double linearB3) {
 	linearA1_B1 = { linearA1, linearB1 };
 	linearA2_B2 = { linearA2, linearA2 };
